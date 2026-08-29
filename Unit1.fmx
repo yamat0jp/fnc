@@ -1,0 +1,81 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 684
+  ClientWidth = 915
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object TMSFNCEdgeWebBrowser1: TTMSFNCEdgeWebBrowser
+    Align = Client
+    Size.Width = 915.000000000000000000
+    Size.Height = 684.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    OnInitialized = TMSFNCEdgeWebBrowser1Initialized
+    Settings.EnableContextMenu = True
+    Settings.EnableShowDebugConsole = True
+    Settings.EnableAcceleratorKeys = True
+    Settings.AllowExternalDrop = True
+    Settings.UsePopupMenuAsContextMenu = False
+  end
+  object MainMenu1: TMainMenu
+    Left = 360
+    Top = 24
+    object MenuItem1: TMenuItem
+      Text = #25805#20316
+      object MenuItem2: TMenuItem
+        Action = Action1
+        Locked = True
+        ImageIndex = -1
+      end
+      object MenuItem3: TMenuItem
+        Locked = True
+        Text = '-'
+      end
+      object MenuItem6: TMenuItem
+        Action = Action2
+        Locked = True
+        Text = #38283#12367
+        ImageIndex = -1
+      end
+      object MenuItem5: TMenuItem
+        Locked = True
+        Text = '-'
+      end
+      object MenuItem4: TMenuItem
+        Action = FileExit1
+        Locked = True
+        ImageIndex = 43
+      end
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = 'epub'
+    Filter = 'EPUB|*.epub'
+    Left = 584
+    Top = 24
+  end
+  object ActionList1: TActionList
+    Left = 256
+    Top = 24
+    object Action1: TAction
+      Category = 'File'
+      Text = #12522#12475#12483#12488
+      OnExecute = Action1Execute
+    end
+    object FileExit1: TFileExit
+      Category = 'File'
+      Hint = #32066#20102'|'#12450#12503#12522#12465#12540#12471#12519#12531#12434#32066#20102#12375#12414#12377
+      ImageIndex = 43
+      ImageIndex = 43
+    end
+    object Action2: TAction
+      Category = 'File'
+      Text = 'Action2'
+      OnExecute = Action2Execute
+    end
+  end
+end

@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>EPUB Reader</title>
+    <style>
+        :root { --bg: #1e1e1e; --text: #ddd; --header-h: 32px; }
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: sans-serif; }
+        body { display: flex; flex-direction: column; }
+        #status { height: var(--header-h); line-height: var(--header-h); padding: 0 10px; background: #333; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+        #viewer { flex: 1; background: #fafafa; }
+    </style>
+</head>
+<body>
+
+    <div id="status">WebView2 Ready</div>
+    <div id="viewer"></div>
+<!-- module ではなく、ビルド済みのディストリビューション版（epub.min.js等）を読み込みます -->
+<script src="/jszip-master/dist/jszip.min.js"></script>
+<script src="/epub.js-master/src/epub.js"></script>
+
+<script>
+    const ReaderApp = {
+        book: null,
+        rendition: null,
+        statusEl: document.getElementById('status'),
+
+        updateStatus(text) {
+            this.statusEl.textContent = text;
+        },
+
+        base64ToArrayBuffer(base64) {
+            const byteCharacters = atob(base64);
+            const len = byteCharacters.length;
+            const byteNumbers = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            return byteNumbers.buffer;
+        },
+
+        // メモリ破棄処理を共通化
+        async cleanup() {
+            if (this.rendition) {
+                await this.rendition.destroy();
+                this.rendition = null;
+            }
+            if (this.book) {
+                this.book.destroy();
+                this.book = null;
+            }
+        },
+
+        // Base64データから読み込む場合
+        async loadBook(base64Data, filePath) {
+            try {
+                await this.cleanup();
+                const filename = filePath ? filePath.split(/[\\/]/).pop() : "EPUB";
+                this.updateStatus("読み込み中: " + filename);
+
+                const data = this.base64ToArrayBuffer(base64Data);
+                this.book = ePub(data, { encoding: "binary" });
+                this.rendition = this.book.renderTo("viewer", {
+                    width: "100%", height: "100%", flow: "paginated", spread: "auto"
+                });
+
+                await this.rendition.display();
+                this.updateStatus("表示中: " + filename);
+            } catch (err) {
+                console.error("loadBookエラー:", err);
+                this.updateStatus("エラー: " + err.message);
+            }
+        },
+
+        // カスタムスキーム/URLから読み込む場合
+        async fetchBook(filePath) {
+            try {
+                await this.cleanup();
+                const filename = filePath.split(/[\\/]/).pop();
+                this.updateStatus("通信中: " + filename);
+
+                const response = await fetch("epub://" + filePath);
+                if (!response.ok) throw new Error("HTTPエラー: " + response.status);
+
+                const arrayBuffer = await response.arrayBuffer();
+                this.book = ePub(arrayBuffer);
+                this.rendition = this.book.renderTo("viewer", {
+                    width: "100%", height: "100%", flow: "paginated", spread: "auto"
+                });
+
+                await this.rendition.display();
+                this.updateStatus("表示中: " + filename);
+            } catch (err) {
+                console.error("fetchBookエラー:", err);
+                this.updateStatus("エラー: " + err.message);
+            }
+        },
+
+        next() { if (this.rendition) this.rendition.next(); },
+        prev() { if (this.rendition) this.rendition.prev(); }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+        // WebView2専用のメッセージ受信用イベントを使用
+            window.addEventListener('message', async (event) => {
+                try {
+                    // JSON文字列で渡されてくる場合とオブジェクトの場合の両方に対応
+                    const data = (typeof event.data === 'string') ? JSON.parse(event.data) : event.data;
+                    const { type, file, path } = data;
+
+                    if (type === "epub_path") {
+                        // データ(file)があれば Base64 経由、なければ fetch 経由で1つだけ実行
+                        if (file) {
+                            await ReaderApp.loadBook(file, path);
+                        } else if (path) {
+                            await ReaderApp.fetchBook(path);
+                        }
+                    }
+                } catch (err) {
+                    console.error("メッセージ受信用エラー:", err);
+                }
+            });
+
+            // Delphi側へ完了通知
+            window.chrome.webview.postMessage("loaded");
+    });
+
+    // ページ全体の非同期例外用セーフティネット
+    window.addEventListener("unhandledrejection", (e) => {
+        console.error("未捕獲の非同期例外:", e.reason);
+    });
+
+    // キー操作
+    document.addEventListener("keydown", e => {
+        if (e.key === "ArrowRight") ReaderApp.next();
+        if (e.key === "ArrowLeft") ReaderApp.prev();
+    });
+</script>
+</body>
+</html>
