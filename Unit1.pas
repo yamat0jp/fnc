@@ -31,7 +31,10 @@ type
     procedure Action1Execute(Sender: TObject);
     procedure TMSFNCEdgeWebBrowser1Initialized(Sender: TObject);
     procedure Action2Execute(Sender: TObject);
+    procedure TMSFNCEdgeWebBrowser1WebMessageReceived(Sender: TObject;
+      var Params: TTMSFNCWebBrowserWebMessageReceivedParams);
   private
+    procedure OpenFile(const FileName: string);
     { private 宣言 }
   public
     { public 宣言 }
@@ -44,7 +47,8 @@ implementation
 
 {$R *.fmx}
 
-uses System.NetEncoding, System.JSON, System.Threading, System.IOUtils, FMX.Platform;
+uses System.NetEncoding, System.JSON, System.Threading, System.IOUtils,
+  FMX.Platform;
 
 procedure TForm1.Action1Execute(Sender: TObject);
 begin
@@ -55,9 +59,12 @@ procedure TForm1.Action2Execute(Sender: TObject);
 var
   path: string;
 begin
-  if not OpenDialog1.Execute then
-    Exit;
-  path := OpenDialog1.FileName;
+  if OpenDialog1.Execute then
+    OpenFile(OpenDialog1.FileName);
+end;
+
+procedure TForm1.OpenFile(const FileName: string);
+begin
   TTask.Run(
     procedure
     var
@@ -67,10 +74,10 @@ begin
       jsObj := TJSONObject.Create;
       try
         b64 := TNetEncoding.Base64.EncodeBytesToString
-          (TFile.ReadAllBytes(path));
+          (TFile.ReadAllBytes(FileName));
         jsObj.AddPair('type', 'epub_path');
         jsObj.AddPair('file', b64);
-        jsObj.AddPair('path', path.Replace('\', '/'));
+        jsObj.AddPair('path', FileName.Replace('\', '/'));
         jstr := jsObj.ToJSON;
       finally
         jsObj.Free;
@@ -90,6 +97,16 @@ begin
     ExtractFilePath(ParamStr(0)),
     TTMSFNCWebBrowserHostResourceAccessKind.akAllow);
   Action1Execute(nil);
+end;
+
+procedure TForm1.TMSFNCEdgeWebBrowser1WebMessageReceived(Sender: TObject;
+var Params: TTMSFNCWebBrowserWebMessageReceivedParams);
+var
+  JSON: TJSONString;
+begin
+  JSON := TJSONObject.ParseJSONValue(Params.WebMessageAsJSON) as TJSONString;
+  if FileExists(ParamStr(1)) and (JSON.Value = 'loaded') then
+    OpenFile(ParamStr(1));
 end;
 
 end.

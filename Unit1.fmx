@@ -20,6 +20,7 @@ object Form1: TForm1
     Settings.EnableAcceleratorKeys = True
     Settings.AllowExternalDrop = True
     Settings.UsePopupMenuAsContextMenu = False
+    OnWebMessageReceived = TMSFNCEdgeWebBrowser1WebMessageReceived
   end
   object MainMenu1: TMainMenu
     Left = 360
