@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'FNC Epub Reader'
   ClientHeight = 684
   ClientWidth = 915
   FormFactor.Width = 320

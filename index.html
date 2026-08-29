@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/index.css">
     <title>EPUB Reader</title>
     <style>
         :root { --bg: #1e1e1e; --text: #ddd; --header-h: 32px; }
@@ -15,6 +16,8 @@
 
     <div id="status">WebView2 Ready</div>
     <div id="viewer"></div>
+    <button id="right" class="float-right-btn">></button>
+    <button id="left" class="float-left-btn"><</button>
 <!-- module ではなく、ビルド済みのディストリビューション版（epub.min.js等）を読み込みます -->
 <script src="/jszip-master/dist/jszip.min.js"></script>
 <script src="/epub.js-master/src/epub.js"></script>
@@ -101,7 +104,6 @@
     };
 
     window.addEventListener("DOMContentLoaded", () => {
-        // WebView2専用のメッセージ受信用イベントを使用
             window.addEventListener('message', async (event) => {
                 try {
                     // JSON文字列で渡されてくる場合とオブジェクトの場合の両方に対応
@@ -125,6 +127,12 @@
             window.chrome.webview.postMessage("loaded");
     });
 
+    const left = document.getElementById("left");
+    const right = document.getElementById("right");
+
+    left.addEventListener('click',() => {ReaderApp.prev();});
+    right.addEventListener('click',() => {ReaderApp.next();});
+
     // ページ全体の非同期例外用セーフティネット
     window.addEventListener("unhandledrejection", (e) => {
         console.error("未捕獲の非同期例外:", e.reason);
@@ -135,6 +143,7 @@
         if (e.key === "ArrowRight") ReaderApp.next();
         if (e.key === "ArrowLeft") ReaderApp.prev();
     });
+
 </script>
 </body>
 </html>

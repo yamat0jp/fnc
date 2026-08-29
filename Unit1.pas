@@ -10,7 +10,8 @@ uses
   FMX.TMSFNCCustomControl, FMX.TMSFNCWebBrowser, FMX.TMSFNCEdgeWebBrowser,
   FMX.Menus, System.Actions, FMX.ActnList, IdContext, IdBaseComponent,
   IdComponent, IdCustomTCPServer, IdCustomHTTPServer, IdHTTPServer,
-  FMX.StdActns, FMX.TMSFNCWebCoreClientBrowser;
+  FMX.StdActns, FMX.TMSFNCWebCoreClientBrowser, FMX.Controls.Presentation,
+  FMX.StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -43,7 +44,7 @@ implementation
 
 {$R *.fmx}
 
-uses System.NetEncoding, System.JSON, System.Threading, System.IOUtils;
+uses System.NetEncoding, System.JSON, System.Threading, System.IOUtils, FMX.Platform;
 
 procedure TForm1.Action1Execute(Sender: TObject);
 begin
