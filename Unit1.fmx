@@ -8,20 +8,6 @@ object Form1: TForm1
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
-  object TMSFNCEdgeWebBrowser1: TTMSFNCEdgeWebBrowser
-    Align = Client
-    Size.Width = 915.000000000000000000
-    Size.Height = 684.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 1
-    OnInitialized = TMSFNCEdgeWebBrowser1Initialized
-    Settings.EnableContextMenu = True
-    Settings.EnableShowDebugConsole = True
-    Settings.EnableAcceleratorKeys = True
-    Settings.AllowExternalDrop = True
-    Settings.UsePopupMenuAsContextMenu = False
-    OnWebMessageReceived = TMSFNCEdgeWebBrowser1WebMessageReceived
-  end
   object MainMenu1: TMainMenu
     Left = 360
     Top = 24
@@ -58,6 +44,20 @@ object Form1: TForm1
     Filter = 'EPUB|*.epub'
     Left = 584
     Top = 24
+  end
+  object TMSFNCEdgeWebBrowser1: TTMSFNCEdgeWebBrowser
+    Align = Client
+    Size.Width = 915.000000000000000000
+    Size.Height = 684.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    OnInitialized = TMSFNCEdgeWebBrowser1Initialized
+    Settings.EnableContextMenu = True
+    Settings.EnableShowDebugConsole = True
+    Settings.EnableAcceleratorKeys = True
+    Settings.AllowExternalDrop = False
+    Settings.UsePopupMenuAsContextMenu = False
+    OnWebMessageReceived = TMSFNCEdgeWebBrowser1WebMessageReceived
   end
   object ActionList1: TActionList
     Left = 256

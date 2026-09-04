@@ -15,7 +15,6 @@ uses
 
 type
   TForm1 = class(TForm)
-    TMSFNCEdgeWebBrowser1: TTMSFNCEdgeWebBrowser;
     ActionList1: TActionList;
     MainMenu1: TMainMenu;
     Action1: TAction;
@@ -28,6 +27,7 @@ type
     OpenDialog1: TOpenDialog;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
+    TMSFNCEdgeWebBrowser1: TTMSFNCEdgeWebBrowser;
     procedure Action1Execute(Sender: TObject);
     procedure TMSFNCEdgeWebBrowser1Initialized(Sender: TObject);
     procedure Action2Execute(Sender: TObject);
@@ -52,6 +52,7 @@ uses System.NetEncoding, System.JSON, System.Threading, System.IOUtils,
 
 procedure TForm1.Action1Execute(Sender: TObject);
 begin
+  TMSFNCEdgeWebBrowser1.ExecuteJavaScript('window.ReaderApp.cleanup;');
   TMSFNCEdgeWebBrowser1.Navigate('http://appsets.local/index.html');
 end;
 
